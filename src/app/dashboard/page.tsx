@@ -3,9 +3,24 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 
+interface User {
+  userId: string;
+  email: string;
+  name: string;
+}
+
+interface Post {
+  _id: string;
+  title: string;
+  content: string;
+  authorId: string;
+  authorName: string;
+  createdAt: string;
+}
+
 export default function Dashboard() {
-  const [posts, setPosts] = useState([]);
-  const [currentUser, setCurrentUser] = useState(null);
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
@@ -15,7 +30,6 @@ export default function Dashboard() {
 
   const checkAuthAndFetchData = async () => {
     try {
-     
       const userRes = await fetch('/api/auth', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -23,7 +37,6 @@ export default function Dashboard() {
       });
       
       if (!userRes.ok) {
-       
         router.push('/login');
         return;
       }
@@ -31,7 +44,6 @@ export default function Dashboard() {
       const userData = await userRes.json();
       setCurrentUser(userData.user);
 
- 
       const res = await fetch('/api/posts');
       const data = await res.json();
       setPosts(data.posts || []);
@@ -52,7 +64,7 @@ export default function Dashboard() {
         body: JSON.stringify({ action: 'delete', id }),
       });
       
-      checkAuthAndFetchData(); 
+      checkAuthAndFetchData();
     } catch (error) {
       alert('Delete failed');
     }
@@ -76,7 +88,7 @@ export default function Dashboard() {
         {posts.length === 0 ? (
           <p>No posts yet. Create your first post!</p>
         ) : (
-          posts.map((post: any) => (
+          posts.map((post) => (
             <div key={post._id} className="bg-white p-4 rounded shadow">
               <h3 className="text-xl font-bold mb-2">{post.title}</h3>
               <p className="text-gray-600 mb-2">{post.content.substring(0, 150)}...</p>

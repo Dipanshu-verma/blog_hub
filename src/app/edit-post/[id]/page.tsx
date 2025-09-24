@@ -6,6 +6,12 @@ interface PageProps {
   params: Promise<{ id: string }>;
 }
 
+interface Post {
+  _id: string;
+  title: string;
+  content: string;
+}
+
 export default function EditPost({ params }: PageProps) {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
@@ -34,14 +40,17 @@ export default function EditPost({ params }: PageProps) {
         const data = await res.json();
         setTitle(data.post.title);
         setContent(data.post.content);
+      } else {
+        router.push('/dashboard');
       }
     } catch (error) {
       console.log('Error:', error);
+      router.push('/dashboard');
     }
     setLoading(false);
   };
 
-  const handleSubmit = async (e: any) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
     try {

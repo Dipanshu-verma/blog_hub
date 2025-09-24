@@ -31,7 +31,7 @@ export default function CreatePost() {
     setChecking(false);
   };
 
-  const handleSubmit = async (e: any) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     

@@ -1,17 +1,20 @@
 'use client';
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
   const router = useRouter();
 
-  const handleSubmit = async (e: any) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    
+    setError('');
+
     try {
       const res = await fetch('/api/auth', {
         method: 'POST',
@@ -22,19 +25,26 @@ export default function Login() {
       if (res.ok) {
         router.push('/dashboard');
       } else {
-        alert('Login failed');
+        const data = await res.json();
+        setError(data.error || 'Login failed');
       }
     } catch (error) {
-      alert('Something went wrong');
+      setError('Something went wrong');
+    } finally {
+      setLoading(false);
     }
-    
-    setLoading(false);
   };
 
   return (
     <div className="max-w-md mx-auto bg-white p-6 rounded-lg shadow">
       <h1 className="text-2xl font-bold mb-4">Login</h1>
       
+      {error && (
+        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4">
+          {error}
+        </div>
+      )}
+
       <form onSubmit={handleSubmit}>
         <div className="mb-4">
           <label className="block text-sm font-bold mb-2">Email:</label>
@@ -68,7 +78,7 @@ export default function Login() {
       </form>
       
       <p className="mt-4 text-center">
-        Don't have account? <a href="/register" className="text-blue-500">Register</a>
+        Don't have account? <Link href="/register" className="text-blue-500">Register</Link>
       </p>
     </div>
   );
