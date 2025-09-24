@@ -2,22 +2,32 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
-export default function EditPost({ params }: { params: { id: string } }) {
+interface PageProps {
+  params: Promise<{ id: string }>;
+}
+
+export default function EditPost({ params }: PageProps) {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [loading, setLoading] = useState(true);
+  const [postId, setPostId] = useState('');
   const router = useRouter();
 
   useEffect(() => {
-    fetchPost();
-  }, []);
+    async function getParams() {
+      const resolvedParams = await params;
+      setPostId(resolvedParams.id);
+      fetchPost(resolvedParams.id);
+    }
+    getParams();
+  }, [params]);
 
-  const fetchPost = async () => {
+  const fetchPost = async (id: string) => {
     try {
       const res = await fetch('/api/posts', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'getOne', id: params.id }),
+        body: JSON.stringify({ action: 'getOne', id }),
       });
       
       if (res.ok) {
@@ -38,7 +48,7 @@ export default function EditPost({ params }: { params: { id: string } }) {
       const res = await fetch('/api/posts', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ action: 'update', id: params.id, title, content }),
+        body: JSON.stringify({ action: 'update', id: postId, title, content }),
       });
       
       if (res.ok) {
