@@ -27,16 +27,16 @@ export async function POST(request: NextRequest) {
     }
     
     if (action === 'register') {
-      // Check if user exists
+     
       const existingUser = await db.collection('users').findOne({ email });
       if (existingUser) {
         return NextResponse.json({ error: 'User already exists' }, { status: 400 });
       }
       
-      // Hash password
+ 
       const hashedPassword = await bcrypt.hash(password, 10);
       
-      // Create user
+ 
       const result = await db.collection('users').insertOne({
         name,
         email,
@@ -44,7 +44,7 @@ export async function POST(request: NextRequest) {
         createdAt: new Date()
       });
       
-      // Create token
+ 
       const token = jwt.sign(
         { userId: result.insertedId, email, name }, 
         process.env.JWT_SECRET!, 
@@ -57,19 +57,19 @@ export async function POST(request: NextRequest) {
     }
     
     if (action === 'login') {
-      // Find user
+ 
       const user = await db.collection('users').findOne({ email });
       if (!user) {
         return NextResponse.json({ error: 'Invalid credentials' }, { status: 401 });
       }
       
-      // Check password
+ 
       const isValid = await bcrypt.compare(password, user.password);
       if (!isValid) {
         return NextResponse.json({ error: 'Invalid credentials' }, { status: 401 });
       }
       
-      // Create token
+ 
       const token = jwt.sign(
         { userId: user._id, email: user.email, name: user.name }, 
         process.env.JWT_SECRET!, 

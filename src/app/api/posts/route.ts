@@ -15,13 +15,13 @@ export async function GET() {
 
 export async function POST(request: NextRequest) {
   try {
-    // Get token from cookies
+    
     const token = request.cookies.get('token')?.value;
     if (!token) {
       return NextResponse.json({ error: 'Not authenticated' }, { status: 401 });
     }
     
-    // Verify token
+    
     const decoded: any = jwt.verify(token, process.env.JWT_SECRET!);
     
     const body = await request.json();

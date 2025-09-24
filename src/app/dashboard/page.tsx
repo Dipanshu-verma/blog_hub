@@ -15,7 +15,7 @@ export default function Dashboard() {
 
   const checkAuthAndFetchData = async () => {
     try {
-      // Check if user is logged in
+     
       const userRes = await fetch('/api/auth', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -23,7 +23,7 @@ export default function Dashboard() {
       });
       
       if (!userRes.ok) {
-        // User not logged in, redirect to login
+       
         router.push('/login');
         return;
       }
@@ -31,7 +31,7 @@ export default function Dashboard() {
       const userData = await userRes.json();
       setCurrentUser(userData.user);
 
-      // Get all posts
+ 
       const res = await fetch('/api/posts');
       const data = await res.json();
       setPosts(data.posts || []);
@@ -52,7 +52,7 @@ export default function Dashboard() {
         body: JSON.stringify({ action: 'delete', id }),
       });
       
-      checkAuthAndFetchData(); // Reload posts
+      checkAuthAndFetchData(); 
     } catch (error) {
       alert('Delete failed');
     }
